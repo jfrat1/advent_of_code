@@ -1,22 +1,42 @@
 use std::ops::RangeInclusive;
 
-
 pub fn is_index_in_or_adjacent_to_range(index: usize, range: &RangeInclusive<usize>) -> bool {
-    // protect for underflow
-    let range_start: &usize = range.start();
-    let range_end: &usize = range.end();
-
-    let range_start_with_adjacent_idx: usize = if *range_start == 0 {*range_start} else {*range_start - 1};
-    let range_end_with_adjacent_idx: usize = *range_end + 1;
-
-    let range_plus_adjacent_idxs: RangeInclusive<usize> = range_start_with_adjacent_idx..=range_end_with_adjacent_idx;
-    return range_plus_adjacent_idxs.contains(&index);
+    let range_plus_adjacent_idxs = range_with_adjacent_indices(range);
+    range_plus_adjacent_idxs.contains(&index)
 }
 
+fn range_with_adjacent_indices(range: &RangeInclusive<usize>) -> RangeInclusive<usize> {
+    let extended_range_start = usize_subtract_min_zero(range.start(), &1);
+    let extended_range_end = range.end() + 1;
+    extended_range_start..=extended_range_end
+}
+
+fn usize_subtract_min_zero(minuend: &usize, subtractend: &usize) -> usize {
+    if subtractend > minuend {
+        0
+    } else {
+        minuend - subtractend
+    }
+}
 
 #[cfg(test)]
 mod tests {
-    use super::is_index_in_or_adjacent_to_range;
+    use super::*;
+
+    #[test]
+    fn test_subtract_usize_min_zero_no_limit() {
+        assert_eq!(usize_subtract_min_zero(&2, &1), 1);
+    }
+
+    #[test]
+    fn test_subtract_usize_min_zero_with_limit() {
+        assert_eq!(usize_subtract_min_zero(&2, &3), 0);
+    }
+
+    #[test]
+    fn test_subtract_usize_min_zero_with_limit_minuend_zero() {
+        assert_eq!(usize_subtract_min_zero(&0, &1), 0);
+    }
 
     #[test]
     fn test_is_index_in_or_adjacent_to_range() {
@@ -40,5 +60,4 @@ mod tests {
         // with adjacent indices
         assert!(is_index_in_or_adjacent_to_range(5, &(0..=4)));
     }
-
 }

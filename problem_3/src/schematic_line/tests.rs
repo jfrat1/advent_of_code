@@ -1,5 +1,6 @@
 use super::*;
 
+use crate::line_part_numbers;
 use crate::test_utils;
 
 #[test]
@@ -84,7 +85,7 @@ fn test_schem_line_part_numbers_from_line_single_line_two_matches() {
 
     let expect: Vec<String> = vec![String::from("467"), String::from("114")];
     assert!(test_utils::is_vec_set_of_strings_equal(
-        line.part_numbers_from_line(None, None),
+        line_part_numbers(&line, None, None),
         expect
     ));
 }
@@ -97,7 +98,7 @@ fn test_schem_line_part_numbers_from_line_single_line_part_num_at_end_of_line() 
 
     let expect: Vec<String> = vec![String::from("467"), String::from("114")];
     assert!(test_utils::is_vec_set_of_strings_equal(
-        line.part_numbers_from_line(None, None),
+        line_part_numbers(&line, None, None),
         expect
     ));
 }
@@ -113,7 +114,7 @@ fn test_schem_line_part_numbers_from_line_with_next_line() {
     };
     let expect: Vec<String> = vec![String::from("467")];
     assert!(test_utils::is_vec_set_of_strings_equal(
-        line.part_numbers_from_line(None, Some(&next_line)),
+        line_part_numbers(&line, None, Some(&next_line)),
         expect,
     ));
 }
@@ -132,7 +133,7 @@ fn test_schem_line_part_numbers_from_line_with_prev_and_next_lines() {
     let expect: Vec<String> = vec![String::from("35"), String::from("633")];
 
     assert!(test_utils::is_vec_set_of_strings_equal(
-        line.part_numbers_from_line(Some(&prev_line), Some(&next_line)),
+        line_part_numbers(&line, Some(&prev_line), Some(&next_line)),
         expect
     ));
 }
@@ -147,7 +148,7 @@ fn test_schem_line_part_numbers_from_line_with_symbol_in_primary_line() {
     };
     let expect: Vec<String> = vec![String::from("617")];
     assert!(test_utils::is_vec_set_of_strings_equal(
-        line.part_numbers_from_line(None, Some(&next_line)),
+        line_part_numbers(&line, None, Some(&next_line)),
         expect,
     ));
 }

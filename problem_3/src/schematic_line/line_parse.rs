@@ -2,7 +2,7 @@ use super::line_parse;
 use std::collections::HashMap;
 use std::ops::RangeInclusive;
 
-pub fn indices_of_non_dot_symbol_characters_in_line(line: &String) -> Option<Vec<usize>> {
+pub fn indices_of_non_dot_symbol_characters_in_line(line: &str) -> Option<Vec<usize>> {
     let line_idxs_with_symbols: Vec<usize> = line
         .chars()
         .enumerate()
@@ -10,11 +10,11 @@ pub fn indices_of_non_dot_symbol_characters_in_line(line: &String) -> Option<Vec
         .collect();
 
     let are_symbols_in_line = !line_idxs_with_symbols.is_empty();
-    return are_symbols_in_line.then_some(line_idxs_with_symbols);
+    are_symbols_in_line.then_some(line_idxs_with_symbols)
 }
 
 pub fn is_char_a_non_dot_symbol(character: char) -> bool {
-    return !(character.is_numeric() || character == '.');
+    !(character.is_numeric() || character == '.')
 }
 
 pub fn ranges_of_continuous_numeric_characters_in_line(
@@ -45,7 +45,7 @@ pub fn ranges_of_continuous_numeric_characters_in_line(
     }
 
     let are_numeric_chars_in_line = !continuous_numbers_and_ranges.is_empty();
-    return are_numeric_chars_in_line.then_some(continuous_numbers_and_ranges);
+    are_numeric_chars_in_line.then_some(continuous_numbers_and_ranges)
 }
 
 #[cfg(test)]

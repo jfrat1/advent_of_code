@@ -15,7 +15,7 @@ pub fn is_vec_set_of_strings_equal(vec_1: Vec<String>, vec_2: Vec<String>) -> bo
             matches += 1;
         }
     }
-    return matches == vec_1.len();
+    matches == vec_1.len()
 }
 
 #[cfg(test)]

@@ -16,31 +16,97 @@ impl From<String> for Schematic {
             .map(|s| schematic_line::SchematicLine::from(s.to_owned()))
             .collect();
 
-        return Schematic { lines: lines };
+        Schematic { lines }
     }
 }
 
 impl Schematic {
     fn part_numbers_by_line(&self) -> Vec<Vec<String>> {
         let mut part_numbers_by_line: Vec<Vec<String>> = Vec::new();
-        let num_lines = self.lines.len();
+
         for (line_idx, line) in self.lines.iter().enumerate() {
-            let prev_line: Option<&schematic_line::SchematicLine> = if line_idx == 0 {
-                None
-            } else {
-                Some(&self.lines[line_idx - 1])
-            };
-            let next_line: Option<&schematic_line::SchematicLine> = if line_idx == num_lines - 1 {
-                None
-            } else {
-                Some(&self.lines[line_idx + 1])
-            };
-            let line_part_numbers = line.part_numbers_from_line(prev_line, next_line);
+            let prev_line = self.previous_line(line_idx);
+            let next_line = self.next_line(line_idx);
+            let line_part_numbers = line_part_numbers(line, prev_line, next_line);
             part_numbers_by_line.push(line_part_numbers);
         }
 
-        return part_numbers_by_line;
+        part_numbers_by_line
     }
+
+    fn next_line(&self, line_idx: usize) -> Option<&schematic_line::SchematicLine> {
+        let num_lines = self.lines.len();
+        let next_line: Option<&schematic_line::SchematicLine> = if line_idx == num_lines - 1 {
+            None
+        } else {
+            Some(&self.lines[line_idx + 1])
+        };
+        next_line
+    }
+
+    fn previous_line(&self, line_idx: usize) -> Option<&schematic_line::SchematicLine> {
+        let prev_line: Option<&schematic_line::SchematicLine> = if line_idx == 0 {
+            None
+        } else {
+            Some(&self.lines[line_idx - 1])
+        };
+        prev_line
+    }
+}
+
+pub fn line_part_numbers(
+    this_line: &schematic_line::SchematicLine,
+    prev_line: Option<&schematic_line::SchematicLine>,
+    next_line: Option<&schematic_line::SchematicLine>,
+) -> Vec<String> {
+    let mut part_numbers: Vec<String> = Vec::new();
+
+    if let Some(part_numbers_and_ranges) = this_line.part_numbers_and_idx_ranges() {
+        for (part_number, range) in part_numbers_and_ranges {
+            // TODO - remove this duplication of code
+
+            // check this line
+            if let Some(this_line_symbol_idxs) = this_line.inidices_of_symbol_characters() {
+                for idx in this_line_symbol_idxs {
+                    if schematic_line::line_compare::is_index_in_or_adjacent_to_range(idx, &range)
+                        && !part_numbers.contains(&part_number)
+                    {
+                        part_numbers.push(part_number.clone());
+                    }
+                }
+            }
+
+            // check previous line
+            if let Some(prev) = &prev_line {
+                if let Some(prev_symbox_idxs) = prev.inidices_of_symbol_characters() {
+                    for idx in prev_symbox_idxs {
+                        if schematic_line::line_compare::is_index_in_or_adjacent_to_range(
+                            idx, &range,
+                        ) && !part_numbers.contains(&part_number)
+                        {
+                            part_numbers.push(part_number.clone());
+                        }
+                    }
+                }
+            }
+
+            // check next line
+            if let Some(next) = &next_line {
+                if let Some(next_symbox_idxs) = next.inidices_of_symbol_characters() {
+                    for idx in next_symbox_idxs {
+                        if schematic_line::line_compare::is_index_in_or_adjacent_to_range(
+                            idx, &range,
+                        ) && !part_numbers.contains(&part_number)
+                        {
+                            part_numbers.push(part_number.clone());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    part_numbers
 }
 
 fn solve_puzzle_1(puzzle_data: String) -> u32 {
@@ -57,7 +123,7 @@ fn solve_puzzle_1(puzzle_data: String) -> u32 {
         })
         .sum();
 
-    return schematic_part_numbers_sum;
+    schematic_part_numbers_sum
 }
 
 fn main() {
