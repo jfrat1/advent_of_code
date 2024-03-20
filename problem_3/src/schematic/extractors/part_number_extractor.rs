@@ -19,8 +19,8 @@ impl<'a> ItemExtractor for LinePartNumberExtractor<'a> {
 impl LinePartNumberExtractor<'_> {
     pub fn new<'a>(
         line: &'a SchematicLine,
-        next_line: Option<&'a SchematicLine>,
         prev_line: Option<&'a SchematicLine>,
+        next_line: Option<&'a SchematicLine>,
     ) -> LinePartNumberExtractor<'a> {
         let part_numbers_line = line;
         let mut symbols_lines = vec![line];
