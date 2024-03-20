@@ -2,4 +2,5 @@
 resolver = "2"
 members = [
     "problem_3",
+    "problem_4",
 ]

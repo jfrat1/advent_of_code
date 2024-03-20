@@ -1,8 +1,17 @@
+use std::iter;
 use std::ops::RangeInclusive;
 
 pub fn is_index_in_or_adjacent_to_range(index: usize, range: &RangeInclusive<usize>) -> bool {
     let range_plus_adjacent_idxs = range_with_adjacent_indices(range);
     range_plus_adjacent_idxs.contains(&index)
+}
+
+pub fn any_bits_in_or_adjacent_to_range(range: &RangeInclusive<usize>, bitfield: Vec<bool>) -> bool {
+    let range_plus_adjacent_idxs = range_with_adjacent_indices(range);
+    let mut range_bits: Vec<bool> = iter::repeat(false).take(*range_plus_adjacent_idxs.end()).collect();
+
+    range_plus_adjacent_idxs.into_iter().for_each(|i| range_bits.insert(i, true));
+    range_bits.iter().zip(bitfield).any(|(r, b)| r & b)
 }
 
 fn range_with_adjacent_indices(range: &RangeInclusive<usize>) -> RangeInclusive<usize> {
@@ -22,6 +31,28 @@ fn usize_subtract_min_zero(minuend: &usize, subtractend: &usize) -> usize {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test_utils::ints_to_bools;
+
+    #[test]
+    fn test_any_bits_in_or_adjacent_to_range_true_in_range() {
+        let range = 2..=4;
+        let bitfield = ints_to_bools(vec![0, 0, 0, 1, 0, 0]);
+        assert!(any_bits_in_or_adjacent_to_range(&range, bitfield));
+    }
+
+    #[test]
+    fn test_any_bits_in_or_adjacent_to_range_true_adjacent_to_range() {
+        let range = 2..=4;
+        let bitfield = ints_to_bools(vec![0, 1, 0, 0, 0, 0]);
+        assert!(any_bits_in_or_adjacent_to_range(&range, bitfield));
+    }
+
+    #[test]
+    fn test_any_bits_in_or_adjacent_to_range_false_out_of_range() {
+        let range = 2..=4;
+        let bitfield = ints_to_bools(vec![1, 0, 0, 0, 0, 0]);
+        assert!(!any_bits_in_or_adjacent_to_range(&range, bitfield));
+    }
 
     #[test]
     fn test_subtract_usize_min_zero_no_limit() {

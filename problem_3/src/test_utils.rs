@@ -18,6 +18,15 @@ pub fn is_vec_set_of_strings_equal(vec_1: Vec<String>, vec_2: Vec<String>) -> bo
     matches == vec_1.len()
 }
 
+
+pub fn ints_to_bools(ints: Vec<i32>) -> Vec<bool> {
+    ints.
+        iter()
+        .map(|b| *b != 0)
+        .collect()
+}
+
+
 #[cfg(test)]
 mod tests {
     use super::is_vec_set_of_strings_equal;
