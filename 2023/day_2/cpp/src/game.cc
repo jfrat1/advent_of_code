@@ -19,7 +19,7 @@ Reveal Reveal::From(std::string reveal_str) {
     while (token_start_pos != std::string::npos) {
         size_t token_len = token_end_pos - token_start_pos;
         std::string token = reveal_str.substr(token_start_pos, token_len);
-
+        // TODO: start here when I get back to this problem
     }
 
 
