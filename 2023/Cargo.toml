@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
 members = [
-    "problem_3",
-    "problem_4",
+    "day_3",
+    "day_4",
 ]
